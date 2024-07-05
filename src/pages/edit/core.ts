@@ -14,6 +14,7 @@ export function useComposition() {
    */
   function zoomAuto(): void {
     const box = browserComputePathBoundingBox(rawPath.value)
+    // 宽高比
     const k = canvasHeight.value / canvasWidth.value
 
     let w = box.width + 2
@@ -22,7 +23,7 @@ export function useComposition() {
       w = h / k
     else
       h = k * w
-    // -1 是为了让原点靠近左上角 1 格。后面的 减是为了让原点靠近中间
+
     updateViewPort(box.x - 1, box.y - 1, w, h)
   }
 
