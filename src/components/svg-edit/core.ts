@@ -130,6 +130,7 @@ export function useComposition() {
     try {
       rawPath.value = newPath
       parsedPath.value = new Svg(rawPath.value)
+
       // reloadPoints()
       if (autozoom)
         zoomAuto()

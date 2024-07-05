@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { darkTheme } from 'naive-ui'
+
 useHead({
   title: 'Svg Icon Edit',
   meta: [
@@ -19,8 +21,10 @@ useHead({
 </script>
 
 <template>
-  <main font-sans text="center gray-700 dark:gray-200">
-    <RouterView />
+  <n-config-provider :theme="darkTheme">
+    <main font-sans text="center gray-700 dark:gray-200">
+      <RouterView />
     <!-- <TheFooter /> -->
-  </main>
+    </main>
+  </n-config-provider>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import Canvas from './Canvas.vue'
+import { useComposition } from './core'
 import { initCanvas, initEventListener, initSvgPath } from './PathCanvas.module'
 import { useSvgPathStore } from '~/stores/svg-path'
 
@@ -14,6 +15,11 @@ onMounted(() => {
   initSvgPath()
   // 初始化页面监听事件
   initEventListener()
+})
+
+watch(() => props.rawPath, (val: string) => {
+  const { reloadPath } = useComposition()
+  reloadPath(val)
 })
 </script>
 
