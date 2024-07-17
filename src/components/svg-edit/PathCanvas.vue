@@ -17,7 +17,11 @@ onMounted(() => {
   initEventListener()
 })
 
-watch(() => props.rawPath, (val: string) => {
+watch(() => props.rawPath, (val?: string) => {
+  if (!val)
+    return
+  if (props.foucusedItem)
+    return
   const { reloadPath } = useComposition()
   reloadPath(val)
 })

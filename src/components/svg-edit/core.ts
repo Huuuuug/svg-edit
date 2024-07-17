@@ -1,10 +1,11 @@
 import { storeToRefs } from 'pinia'
 import { browserComputePathBoundingBox } from './PathCanvas.help'
+import type { Point } from './Svg'
 import { Svg } from './Svg'
 import { useSvgPathStore } from '~/stores/svg-path'
 
 export function useComposition() {
-  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedEvent, wasCanvasDragged }
+  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedPoint, draggedEvent, wasCanvasDragged, targetPoints, controlPoints }
     = storeToRefs(useSvgPathStore())
 
   /**
@@ -13,7 +14,7 @@ export function useComposition() {
    * @return {void} This function does not return anything.
    */
   function zoomAuto(): void {
-    const box = browserComputePathBoundingBox(rawPath.value)
+    const box = browserComputePathBoundingBox(rawPath.value!)
     // 宽高比
     const k = canvasHeight.value / canvasWidth.value
 
@@ -49,7 +50,7 @@ export function useComposition() {
     cfg.value.viewPortY = Number.parseFloat((1 * y).toPrecision(6))
     cfg.value.viewPortWidth = Number.parseFloat((1 * w).toPrecision(4))
     cfg.value.viewPortHeight = Number.parseFloat((1 * h).toPrecision(4))
-    strokeWidth.value = cfg.value.viewPortWidth / canvasWidth.value
+    strokeWidth.value = cfg.value.viewPortWidth * 1 / canvasWidth.value
   }
 
   /**
@@ -59,7 +60,7 @@ export function useComposition() {
    * @return {void} This function does not return anything.
    */
   function setZoom(event: WheelEvent): void {
-    const scale = 1.005 ** event.deltaY
+    const scale = 1.002 ** event.deltaY
     const pt = eventToLocation(event)
     zoomViewPort(scale, pt)
   }
@@ -103,7 +104,11 @@ export function useComposition() {
   function drag(event: MouseEvent | TouchEvent) {
     // 计算当前鼠标的位置
     const pt = eventToLocation(event)
-    if (draggedEvent.value) {
+    if (draggedPoint.value && parsedPath.value) {
+      parsedPath.value.setLocation(draggedPoint.value, pt as Point)
+      reloadPoints()
+    }
+    else if (draggedEvent.value) {
       // 拖拽画布
       wasCanvasDragged.value = true
       const oriPt = eventToLocation(draggedEvent.value)
@@ -123,6 +128,7 @@ export function useComposition() {
    */
   function stopDrag() {
     draggedEvent.value = null
+    draggedPoint.value = null
     wasCanvasDragged.value = false
   }
 
@@ -131,7 +137,7 @@ export function useComposition() {
       rawPath.value = newPath
       parsedPath.value = new Svg(rawPath.value)
 
-      // reloadPoints()
+      reloadPoints()
       if (autozoom)
         zoomAuto()
     }
@@ -139,6 +145,11 @@ export function useComposition() {
       if (!parsedPath.value)
         parsedPath.value = new Svg('')
     }
+  }
+
+  function reloadPoints() {
+    targetPoints.value = parsedPath.value?.targetLocations()
+    controlPoints.value = parsedPath.value?.controlLocations()
   }
 
   return { zoomAuto, setZoom, drag, stopDrag, reloadPath }

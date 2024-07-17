@@ -37,5 +37,5 @@ export function initEventListener() {
 export function initSvgPath() {
   const { rawPath } = storeToRefs(useSvgPathStore())
   const { reloadPath } = useComposition()
-  reloadPath(rawPath.value, true)
+  reloadPath(rawPath.value!, true)
 }

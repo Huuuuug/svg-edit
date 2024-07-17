@@ -1,6 +1,8 @@
 <script setup lang='ts'>
 import { storeToRefs } from 'pinia'
+import type { SvgPoint } from './Svg'
 import { useSvgPathStore } from '~/stores/svg-path'
+import { symbolFn } from '~/utils'
 
 const props = defineProps({
   viewPortX: {
@@ -41,7 +43,7 @@ const props = defineProps({
   },
 })
 
-const { coordinateInterval } = storeToRefs(useSvgPathStore())
+const { coordinateInterval, foucusedItem, hoveredItem, targetPoints, controlPoints, draggedPoint } = storeToRefs(useSvgPathStore())
 const parsedPath = computed(() => {
   if (props.parsedPath)
     return (props.parsedPath as any).asString()
@@ -51,7 +53,6 @@ const parsedPath = computed(() => {
 
 const xGrid = ref()
 const yGrid = ref()
-const symbolFn = (key: string) => Symbol(key)
 
 watch(props, () => {
   if (5 * props.viewPortWidth <= props.canvasWidth) {
@@ -63,6 +64,13 @@ watch(props, () => {
     yGrid.value = []
   }
 }, { immediate: true })
+
+function startDrag(item: SvgPoint, e: MouseEvent) {
+  if (e.buttons === 1) {
+    foucusedItem.value = item.itemReference
+    draggedPoint.value = item
+  }
+}
 </script>
 
 <template>
@@ -99,6 +107,7 @@ watch(props, () => {
       fill="transparent"
       :stroke-width="(item !== 0 && item % coordinateInterval === 0) ? strokeWidth * 3 : strokeWidth"
     />
+
     <line
       v-for="item in yGrid"
       :key="symbolFn(item)"
@@ -111,20 +120,12 @@ watch(props, () => {
       :stroke-width="(item !== 0 && item % coordinateInterval === 0) ? strokeWidth * 3 : strokeWidth"
     />
 
-    <path
-      v-show="isPlay === 'stop'"
-      id="mainSvg"
-      :stroke-width="strokeWidth"
-      stroke="currentColor"
-      fill="#ffffff60"
-      :d="parsedPath"
-    />
-
+    <!-- coordinate line -->
     <template v-for="x in xGrid" :key="x">
       <text
         v-if="x % coordinateInterval === 0 "
         class="select-none"
-        :style="{ fontSize: `${strokeWidth * 14}px`, fill: '#595959' }"
+        :style="{ fontSize: `${strokeWidth * 12}px`, fill: '#595959' }"
         :x="x - 18 * strokeWidth"
         :y="-6 * strokeWidth"
       >{{ x }}
@@ -135,12 +136,81 @@ watch(props, () => {
       <text
         v-if="y % coordinateInterval === 0 && y !== 0"
         class="select-none"
-        :style="{ fontSize: `${strokeWidth * 14}px`, fill: '#595959' }"
+        :style="{ fontSize: `${strokeWidth * 12}px`, fill: '#595959' }"
         :x="-20 * strokeWidth"
         :y="y - 6 * strokeWidth"
       >
         {{ y }}
       </text>
+    </template>
+
+    <!-- full path -->
+    <path
+      id="mainSvg"
+      :stroke-width="strokeWidth"
+      stroke="#fff"
+      fill="#ffffff60"
+      :d="parsedPath"
+    />
+    <!-- hoverPath -->
+    <path
+      v-if="hoveredItem"
+      id="focusSvg"
+      :stroke-width="strokeWidth"
+      fill="transparent"
+      stroke="#FF0033"
+      :d="hoveredItem.asStandaloneString()"
+    />
+    <!-- focusPath -->
+    <path
+      v-if="foucusedItem"
+      id="focusSvg"
+      :stroke-width="strokeWidth"
+      fill="transparent"
+      stroke="#00AEFF"
+      :d="foucusedItem.asStandaloneString()"
+    />
+    <!-- control point -->
+    <g v-for="item in controlPoints" :key="symbolFn(item)">
+      <circle
+        class="z1 cursor-pointer"
+        :cx="item.x"
+        :cy="item.y"
+        fill="gray"
+        :r="strokeWidth"
+        stroke="gray"
+        :stroke-width="strokeWidth * 5"
+        @mousedown="(e:MouseEvent) => startDrag(item, e)"
+        @mouseenter="hoveredItem = item.itemReference"
+        @mouseleave="hoveredItem = null"
+      />
+      <line
+        v-for="rel in item.relations"
+        :key="symbolFn(rel)"
+        class="z0"
+        :x1="item.x"
+        :y1="item.y"
+        :x2="rel.x"
+        :y2="rel.y"
+        :stroke-width="strokeWidth"
+        stroke="gray"
+      />
+    </g>
+
+    <!-- target point -->
+    <template v-for="item in targetPoints" :key="symbolFn(item)">
+      <circle
+        class="z1 cursor-pointer"
+        :cx="item.x"
+        :cy="item.y"
+        fill="#fff"
+        :r="strokeWidth"
+        stroke="#fff"
+        :stroke-width="strokeWidth * 5"
+        @mousedown="(e:MouseEvent) => startDrag(item, e)"
+        @mouseenter="hoveredItem = item.itemReference"
+        @mouseleave="hoveredItem = null"
+      />
     </template>
 
   </svg>
