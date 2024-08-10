@@ -36,7 +36,7 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
 
   // for redo and undo
   const changeHistory = ref<string[]>([rawPath.value || ''])
-  const currentHistoryIndex = ref(-1)
+  const currentHistoryIndex = ref(0)
 
   function addHistoryPath(path: string): void {
     if (!path)

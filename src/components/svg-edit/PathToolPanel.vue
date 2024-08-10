@@ -27,6 +27,7 @@ watch(() => parsedPath.value?.path, () => {
       <n-collapse-item title="PATH" name="path">
         <n-input
           v-model:value="rawPath"
+          :style="{ padding: '0' }"
           type="textarea"
           placeholder="Textarea"
           :rows="6"
