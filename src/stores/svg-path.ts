@@ -19,7 +19,7 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
   const strokeWidth = ref(0)
 
   const parsedPath = ref<Svg>()
-  const rawPath = ref<string | undefined>(DEFAULT_SVG_PATH)
+  const rawPath = ref<string | undefined>(localStorage.getItem('defaultSvagPath') || DEFAULT_SVG_PATH)
   const hoveredItem = ref<SvgItem | null>(null)
   const foucusedItem = ref<SvgItem | null>(null)
   const draggedPoint = ref<SvgPoint | null>(null)
@@ -33,6 +33,19 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
 
   const targetPoints = ref<SvgPoint[] | undefined>([])
   const controlPoints = ref<SvgControlPoint[] | undefined>([])
+
+  // for redo and undo
+  const changeHistory = ref<string[]>([rawPath.value || ''])
+  const currentHistoryIndex = ref(-1)
+
+  function addHistoryPath(path: string): void {
+    if (!path)
+      return
+
+    changeHistory.value.push(path)
+    currentHistoryIndex.value = changeHistory.value.length - 1
+    localStorage.setItem('defaultSvagPath', path)
+  }
 
   return {
     canvasWidth,
@@ -51,5 +64,10 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
     draggedPoint,
     targetPoints,
     controlPoints,
+
+    changeHistory,
+
+    currentHistoryIndex,
+    addHistoryPath,
   }
 })

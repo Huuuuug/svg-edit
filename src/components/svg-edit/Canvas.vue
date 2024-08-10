@@ -45,10 +45,13 @@ const props = defineProps({
 
 const { coordinateInterval, foucusedItem, hoveredItem, targetPoints, controlPoints, draggedPoint } = storeToRefs(useSvgPathStore())
 const parsedPath = computed(() => {
-  if (props.parsedPath)
+  if (props.parsedPath) {
     return (props.parsedPath as any).asString()
-  else
+  }
+
+  else {
     return ''
+  }
 })
 
 const xGrid = ref()
@@ -170,6 +173,7 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
       stroke="#00AEFF"
       :d="foucusedItem.asStandaloneString()"
     />
+
     <!-- control point -->
     <g v-for="item in controlPoints" :key="symbolFn(item)">
       <circle
@@ -178,7 +182,7 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
         :cy="item.y"
         fill="gray"
         :r="strokeWidth"
-        stroke="gray"
+        :stroke="foucusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
         :stroke-width="strokeWidth * 5"
         @mousedown="(e:MouseEvent) => startDrag(item, e)"
         @mouseenter="hoveredItem = item.itemReference"

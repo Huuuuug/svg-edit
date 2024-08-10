@@ -8,6 +8,8 @@ export function useComposition() {
   const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedPoint, draggedEvent, wasCanvasDragged, targetPoints, controlPoints }
     = storeToRefs(useSvgPathStore())
 
+  const { addHistoryPath } = useSvgPathStore()
+
   /**
    * Calculates the optimal zoom level for the canvas based on the dimensions of the path bounding box.
    *
@@ -35,9 +37,9 @@ export function useComposition() {
    * @param {number} y - The y-coordinate of the view port.
    * @param {number | null} w - The width of the view port. Can be null.
    * @param {number | null} h - The height of the view port. Can be null.
-   * @param {boolean} _force - A flag to force the update (default: false).
+   * @param  _force - A flag to force the update (default: false).
    */
-  function updateViewPort(x: number, y: number, w: number | null, h: number | null, _force = false) {
+  function updateViewPort(x: number, y: number, w: number | null, h: number | null, _force = false): void {
     if (w === null && h !== null)
       w = canvasWidth.value * h / canvasHeight.value
     if (h === null && w !== null)
@@ -127,8 +129,12 @@ export function useComposition() {
    *
    */
   function stopDrag() {
-    draggedEvent.value = null
-    draggedPoint.value = null
+    if (draggedPoint.value && rawPath.value) {
+      draggedEvent.value = null
+      draggedPoint.value = null
+      addHistoryPath(rawPath.value)
+    }
+
     wasCanvasDragged.value = false
   }
 
