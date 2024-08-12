@@ -64,6 +64,7 @@ export function useComposition() {
   function setZoom(event: WheelEvent): void {
     const scale = 1.002 ** event.deltaY
     const pt = eventToLocation(event)
+
     zoomViewPort(scale, pt)
   }
 
@@ -98,6 +99,7 @@ export function useComposition() {
     const canvas = document.getElementById('canvas')
     const { top, left } = useElementBounding(canvas)
     const touch = event instanceof MouseEvent ? event : event.touches[0]
+
     const x = cfg.value.viewPortX + (touch.clientX - left.value) * strokeWidth.value
     const y = cfg.value.viewPortY + (touch.clientY - top.value) * strokeWidth.value
     return { x, y }
@@ -158,5 +160,5 @@ export function useComposition() {
     controlPoints.value = parsedPath.value?.controlLocations()
   }
 
-  return { zoomAuto, setZoom, drag, stopDrag, reloadPath }
+  return { zoomAuto, setZoom, drag, stopDrag, reloadPath, zoomViewPort }
 }

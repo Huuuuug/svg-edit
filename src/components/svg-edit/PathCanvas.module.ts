@@ -12,7 +12,15 @@ export function initCanvas() {
   zoomAuto()
 }
 
-export function initEventListener() {
+/**
+ * Initializes event listeners for the canvas element.
+ *
+ * Sets up event listeners for wheel, mousedown, mouseup, and mousemove events.
+ * These listeners handle zooming, dragging, and stopping drag operations.
+ *
+ * @return {void}
+ */
+export function initEventListener(): void {
   const canvas = document.getElementById('canvas') as HTMLElement
   const { setZoom, drag, stopDrag } = useComposition()
   const { draggedEvent, wasCanvasDragged } = storeToRefs(useSvgPathStore())
