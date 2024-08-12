@@ -30,4 +30,13 @@ export default defineConfig({
       },
     }),
   ],
+  preflights: [
+    {
+      getCSS: () => `
+        .n-button {
+          background-color: var(--n-color)
+        }
+      `,
+    },
+  ],
 })

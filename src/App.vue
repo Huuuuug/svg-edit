@@ -22,9 +22,10 @@ useHead({
 
 <template>
   <n-config-provider :theme="darkTheme">
-    <main font-sans text="center gray-700 dark:gray-200">
-      <RouterView />
-    <!-- <TheFooter /> -->
-    </main>
+    <n-message-provider>
+      <main font-sans text="center gray-700 dark:gray-200">
+        <RouterView />
+      </main>
+    </n-message-provider>
   </n-config-provider>
 </template>

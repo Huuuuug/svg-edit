@@ -34,7 +34,7 @@
     "eslint-plugin-format": "^0.1.1",
     "jsdom": "^24.0.0",
     "lint-staged": "^15.2.2",
-    "naive-ui": "^2.38.2",
+    "naive-ui": "^2.39.0",
     "pnpm": "^9.1.1",
     "simple-git-hooks": "^2.11.1",
     "taze": "^0.13.8",
