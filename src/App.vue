@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { darkTheme } from 'naive-ui'
+import { NConfigProvider, darkTheme } from 'naive-ui'
+import themeOverrides from '~/conf/naiveTheme'
 
 useHead({
   title: 'Svg Icon Edit',
@@ -21,11 +22,11 @@ useHead({
 </script>
 
 <template>
-  <n-config-provider :theme="darkTheme">
+  <NConfigProvider :theme="darkTheme" :theme-overrides="themeOverrides">
     <n-message-provider>
       <main font-sans text="center gray-700 dark:gray-200">
         <RouterView />
       </main>
     </n-message-provider>
-  </n-config-provider>
+  </NConfigProvider>
 </template>

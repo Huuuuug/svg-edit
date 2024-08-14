@@ -163,7 +163,7 @@ const patternScale = computed(() => svgBoundaryBox.value.width / 300)
       <n-button secondary @click="handleCopy">
         复制到剪贴板
       </n-button>
-      <n-button color="#1e5204" class="text-[#fff]" @click="handleDownload">
+      <n-button color="#135200" class="text-[#fff]" @click="handleDownload">
         下载
       </n-button>
     </div>
