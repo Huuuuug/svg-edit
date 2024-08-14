@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import { storeToRefs } from 'pinia'
-import type { SvgPoint } from './Svg'
+import type { SvgPoint } from '../core/Svg'
 import { useSvgPathStore } from '~/stores/svg-path'
 import { symbolFn } from '~/utils'
 

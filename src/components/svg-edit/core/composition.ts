@@ -1,5 +1,5 @@
 import { storeToRefs } from 'pinia'
-import { browserComputePathBoundingBox } from './PathCanvas.help'
+import { browserComputePathBoundingBox } from '../canvas/PathCanvas.help'
 import type { Point } from './Svg'
 import { Svg } from './Svg'
 import { useSvgPathStore } from '~/stores/svg-path'
@@ -149,7 +149,7 @@ export function useComposition() {
       if (autozoom)
         zoomAuto()
     }
-    catch (e) {
+    catch {
       if (!parsedPath.value)
         parsedPath.value = new Svg('')
     }

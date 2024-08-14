@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { useComposition } from './core'
+import { useComposition } from '../core/composition'
 
 const { zoomAuto, zoomViewPort } = useComposition()
 

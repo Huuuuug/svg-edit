@@ -1,7 +1,7 @@
 <script setup lang='ts'>
 import { storeToRefs } from 'pinia'
 import { useMessage } from 'naive-ui'
-import { browserComputePathBoundingBox } from './svg-parser'
+import { browserComputePathBoundingBox } from '../core/svg-parser'
 import { useSvgPathStore } from '~/stores/svg-path'
 
 const emits = defineEmits(['cancel', 'success'])

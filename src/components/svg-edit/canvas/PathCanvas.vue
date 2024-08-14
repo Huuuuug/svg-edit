@@ -1,6 +1,6 @@
 <script setup lang='ts'>
+import { useComposition } from '../core/composition'
 import Canvas from './Canvas.vue'
-import { useComposition } from './core'
 import { initCanvas, initEventListener, initSvgPath } from './PathCanvas.module'
 import { useSvgPathStore } from '~/stores/svg-path'
 

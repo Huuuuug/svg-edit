@@ -1,5 +1,5 @@
 import { storeToRefs } from 'pinia'
-import { useComposition } from './core'
+import { useComposition } from '../core/composition'
 import { useSvgPathStore } from '~/stores/svg-path'
 
 export function initCanvas() {
