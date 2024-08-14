@@ -1,12 +1,3 @@
-/**
- * 上一版本更新了背景
- * 这一版本需要添加将 svg parse
- * 1.svg d parse => MLHVZCSQTA
- * 2.分段不同的路径
- * 3.将其在背景板中展示出来
- * 4.可双向选择，列表 <=> 画布
- * 5.可编辑路径
- */
 const kCommandTypeRegex = /^[\t\n\f\r ]*([MLHVZCSQTA])[\t\n\f\r ]*/i
 const kFlagRegex = /^[01]/
 const kNumberRegex = /^[+-]?((\d*\.\d+)|(\d+\.)|(\d+))(e[+-]?\d+)?/i
@@ -99,4 +90,21 @@ export class SvgParser {
     }
     return tokens
   }
+}
+
+export function browserComputePathBoundingBox(path: string): DOMRect {
+  const svgNS = 'http://www.w3.org/2000/svg'
+  const svgEl = document.createElementNS(svgNS, 'svg')
+  const pathEl = document.createElementNS(svgNS, 'path')
+  svgEl.style.position = 'absolute'
+  svgEl.style.width = '0'
+  svgEl.style.height = '0'
+  svgEl.style.overflow = 'hidden'
+  svgEl.setAttribute('aria-hidden', 'true')
+  pathEl.setAttribute('d', path)
+  svgEl.appendChild(pathEl)
+  document.body.appendChild(svgEl)
+  const result = pathEl.getBBox()
+  document.body.removeChild(svgEl)
+  return result
 }

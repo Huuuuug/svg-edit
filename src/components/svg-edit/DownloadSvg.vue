@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 import { storeToRefs } from 'pinia'
 import { useMessage } from 'naive-ui'
+import { browserComputePathBoundingBox } from './svg-parser'
 import { useSvgPathStore } from '~/stores/svg-path'
 
 const emits = defineEmits(['cancel', 'success'])
@@ -11,27 +12,33 @@ const { cfg, rawPath } = storeToRefs(useSvgPathStore())
 
 const { viewPortX, viewPortY, viewPortWidth, viewPortHeight } = cfg.value
 
+const svgBoundaryBox = computed(() => {
+  if (!rawPath.value)
+    return { x: 0, y: 0, width: 0, height: 0 }
+  return browserComputePathBoundingBox(rawPath.value)
+})
+
 const exportOptions = reactive({
   isFill: false,
   isStroke: true,
   fillColor: '',
   strokeColor: '#FF0000',
   strokeWidth: '0.1',
-  x: String(viewPortX),
-  y: String(viewPortY),
-  width: String(viewPortWidth),
-  height: String(viewPortHeight),
+  x: svgBoundaryBox.value.x.toPrecision(4),
+  y: svgBoundaryBox.value.y.toPrecision(4),
+  width: svgBoundaryBox.value.width.toPrecision(4),
+  height: svgBoundaryBox.value.height.toPrecision(4),
 })
+
+function handleCopy() {
+  copyToClipboard(makeSVG())
+}
 
 function handleReset() {
   exportOptions.x = String(viewPortX)
   exportOptions.y = String(viewPortY)
   exportOptions.width = String(viewPortWidth)
   exportOptions.height = String(viewPortHeight)
-}
-
-function handleCopy() {
-  copyToClipboard(makeSVG())
 }
 
 function makeSVG(): string {
@@ -62,6 +69,8 @@ function handleDownload() {
   download('svg-path.svg', makeSVG())
   emits('success')
 }
+
+const patternScale = computed(() => svgBoundaryBox.value.width / 300)
 </script>
 
 <template>
@@ -123,7 +132,27 @@ function handleDownload() {
       </n-grid-item>
 
       <n-grid-item class="flex justify-end">
-        <div class="aspect-ratio-[1/1] w-[300px] bg-light-50" />
+        <svg
+          width="300" height="300" xmlns="http://www.w3.org/2000/svg"
+          :viewBox="`${svgBoundaryBox.x} ${svgBoundaryBox.y} ${svgBoundaryBox.width} ${svgBoundaryBox.height}`"
+        >
+          <defs>
+            <pattern
+              id="striped-pattern" width="16" height="16" patternUnits="userSpaceOnUse" :patternTransform="`scale(${patternScale})`"
+            >
+              <rect x="0" y="0" width="16" height="16" fill="white" />
+              <rect x="0" y="0" width="8" height="8" fill="#cccccc" />
+              <rect x="8" y="8" width="8" height="8" fill="#cccccc" />
+            </pattern>
+          </defs>
+          <clipPath id="preview-clippath">
+            <rect :x="svgBoundaryBox.x" :y="svgBoundaryBox.y" :width="svgBoundaryBox.width" :height="svgBoundaryBox.height" />
+          </clipPath>
+
+          <rect :x="svgBoundaryBox.x" :y="svgBoundaryBox.y" :width="svgBoundaryBox.width" :height="svgBoundaryBox.height" fill="url(#striped-pattern)" />
+          <path :d="rawPath" :fill="exportOptions.fillColor || 'none'" :stroke-width="exportOptions.strokeWidth" :stroke="exportOptions.strokeColor || 'none'" clip-path="url(#preview-clippath)" />
+
+        </svg>
       </n-grid-item>
     </n-grid>
 
