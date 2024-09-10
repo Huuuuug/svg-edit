@@ -10,6 +10,7 @@ import VueMacros from 'unplugin-vue-macros/vite'
 import VueRouter from 'unplugin-vue-router/vite'
 import { VueRouterAutoImports } from 'unplugin-vue-router'
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
+import RadixVueResolver from 'radix-vue/resolver'
 
 export default defineConfig({
   resolve: {
@@ -58,7 +59,7 @@ export default defineConfig({
 
     // https://github.com/antfu/vite-plugin-components
     Components({
-      resolvers: [NaiveUiResolver()],
+      resolvers: [NaiveUiResolver(), RadixVueResolver()],
       dts: 'src/typings/components.d.ts',
     }),
 

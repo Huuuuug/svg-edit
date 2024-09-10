@@ -209,7 +209,7 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
         :cy="item.y"
         fill="#fff"
         :r="strokeWidth"
-        stroke="#fff"
+        :stroke="foucusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
         :stroke-width="strokeWidth * 5"
         @mousedown="(e:MouseEvent) => startDrag(item, e)"
         @mouseenter="hoveredItem = item.itemReference"

@@ -21,6 +21,9 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
   const foucusedItem = ref<SvgItem | null>(null)
   const draggedPoint = ref<SvgPoint | null>(null)
 
+  const draggedIsNew = ref(false)
+  const isDragginng = ref(false)
+
   const draggedEvent = ref<MouseEvent | TouchEvent | null>(null)
   const wasCanvasDragged = ref(false)
 
@@ -28,8 +31,8 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
 
   const commandList = ref([])
 
-  const targetPoints = ref<SvgPoint[] | undefined>([])
-  const controlPoints = ref<SvgControlPoint[] | undefined>([])
+  const targetPoints = ref<SvgPoint[]>([])
+  const controlPoints = ref<SvgControlPoint[]>([])
 
   // for redo and undo
   const changeHistory = ref<string[]>([rawPath.value || ''])
@@ -51,6 +54,8 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
     strokeWidth,
     parsedPath,
     rawPath,
+    draggedIsNew,
+    isDragginng,
     draggedEvent,
     wasCanvasDragged,
     coordinateInterval,

@@ -95,11 +95,12 @@ export class Svg {
   }
 
   setLocation(ptReference: SvgPoint, to: Point) {
-    if (ptReference instanceof SvgControlPoint)
+    if (ptReference instanceof SvgControlPoint) {
       ptReference.itemReference.setControlLocation(ptReference.subIndex, to)
-
-    else
+    }
+    else {
       ptReference.itemReference.setTargetLocation(to)
+    }
 
     this.refreshAbsolutePositions()
   }

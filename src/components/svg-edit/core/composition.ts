@@ -1,11 +1,10 @@
 import { storeToRefs } from 'pinia'
 import { browserComputePathBoundingBox } from '../canvas/PathCanvas.help'
-import type { Point } from './Svg'
-import { Svg } from './Svg'
+import { Point, Svg, SvgItem } from './Svg'
 import { useSvgPathStore } from '~/stores/svg-path'
 
 export function useComposition() {
-  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedPoint, draggedEvent, wasCanvasDragged, targetPoints, controlPoints }
+  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedPoint, draggedIsNew, draggedEvent, foucusedItem, wasCanvasDragged, targetPoints, controlPoints }
     = storeToRefs(useSvgPathStore())
 
   const { addHistoryPath } = useSvgPathStore()
@@ -53,6 +52,73 @@ export function useComposition() {
     cfg.value.viewPortWidth = Number.parseFloat((1 * w).toPrecision(4))
     cfg.value.viewPortHeight = Number.parseFloat((1 * h).toPrecision(4))
     strokeWidth.value = cfg.value.viewPortWidth * 1 / canvasWidth.value
+  }
+
+  /**
+   * Inserts a new item into the path after the provided item.
+   * If after is null, the new item is inserted at the start of the path.
+   * The new item is created using the provided type and the last
+   * control point of the path.
+   * @param {string} type - The type of the new item. Can be 'M', 'L', 'H', 'V', 'C', 'S', 'Q', 'T', 'A', or 'Z'.
+   * @param {SvgItem | null} after - The item after which the new item is inserted. Can be null.
+   * @param {boolean} _convert - Whether to convert the new item's coordinates to absolute.
+   * @return {void}
+   */
+  function insert(type: string, after?: SvgItem | null, _convert?: boolean): void {
+    let newItem: SvgItem | null = null
+    let point1: Point
+
+    draggedIsNew.value = true
+    const pts = targetPoints.value
+
+    if (after) {
+      point1 = after.targetLocation()
+    }
+    else if (pts.length === 0) {
+      newItem = SvgItem.Make(['M', '0', '0'])
+      parsedPath.value?.insert(newItem)
+      point1 = new Point(0, 0)
+    }
+    else {
+      point1 = pts[pts.length - 1]
+    }
+
+    if (type.toLowerCase() !== 'm' || !newItem) {
+      const relative = type.toLowerCase() === type
+      const X = (relative ? 0 : point1.x).toString()
+      const Y = (relative ? 0 : point1.y).toString()
+
+      switch (type.toLocaleLowerCase()) {
+        case 'm': case 'l': case 't':
+          newItem = SvgItem.Make([type, X, Y])
+          break
+        case 'h':
+          newItem = SvgItem.Make([type, X])
+          break
+        case 'v':
+          newItem = SvgItem.Make([type, Y])
+          break
+        case 's': case 'q':
+          newItem = SvgItem.Make([type, X, Y, X, Y])
+          break
+        case 'c':
+          newItem = SvgItem.Make([type, X, Y, X, Y, X, Y])
+          break
+        case 'a':
+          newItem = SvgItem.Make([type, '1', '1', '0', '0', '0', X, Y])
+          break
+        case 'z':
+          newItem = SvgItem.Make([type])
+      }
+      if (newItem) {
+        parsedPath.value?.insert(newItem, after ?? undefined)
+      }
+    }
+
+    if (newItem) {
+      foucusedItem.value = newItem
+      draggedPoint.value = newItem.targetLocation()
+    }
   }
 
   /**
@@ -105,11 +171,23 @@ export function useComposition() {
     return { x, y }
   }
 
-  function drag(event: MouseEvent | TouchEvent) {
+  /**
+   * Handles the drag event.
+   *
+   * @param {MouseEvent | TouchEvent} event - The drag event.
+   * @return {void} This function does not return anything.
+   */
+  function drag(event: MouseEvent | TouchEvent): void {
     // 计算当前鼠标的位置
     const pt = eventToLocation(event)
     if (draggedPoint.value && parsedPath.value) {
       parsedPath.value.setLocation(draggedPoint.value, pt as Point)
+      if (draggedIsNew.value) {
+        const previousIdx = parsedPath.value.path.indexOf(draggedPoint.value.itemReference) - 1
+        if (previousIdx >= 0) {
+          draggedPoint.value.itemReference.resetControlPoints(parsedPath.value.path[previousIdx])
+        }
+      }
       reloadPoints()
     }
     else if (draggedEvent.value) {
@@ -156,9 +234,11 @@ export function useComposition() {
   }
 
   function reloadPoints() {
-    targetPoints.value = parsedPath.value?.targetLocations()
-    controlPoints.value = parsedPath.value?.controlLocations()
+    if (!parsedPath.value)
+      return
+    targetPoints.value = parsedPath.value.targetLocations()
+    controlPoints.value = parsedPath.value.controlLocations()
   }
 
-  return { zoomAuto, setZoom, drag, stopDrag, reloadPath, zoomViewPort }
+  return { zoomAuto, setZoom, drag, stopDrag, reloadPath, zoomViewPort, insert }
 }

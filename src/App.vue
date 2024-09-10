@@ -24,7 +24,7 @@ useHead({
 <template>
   <NConfigProvider :theme="darkTheme" :theme-overrides="themeOverrides">
     <n-message-provider>
-      <main font-sans text="center gray-700 dark:gray-200">
+      <main font-roboto text="center gray-700 dark:gray-200">
         <RouterView />
       </main>
     </n-message-provider>

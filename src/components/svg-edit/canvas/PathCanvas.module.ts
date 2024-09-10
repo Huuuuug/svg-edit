@@ -23,7 +23,7 @@ export function initCanvas() {
 export function initEventListener(): void {
   const canvas = document.getElementById('canvas') as HTMLElement
   const { setZoom, drag, stopDrag } = useComposition()
-  const { draggedEvent, wasCanvasDragged } = storeToRefs(useSvgPathStore())
+  const { draggedEvent, draggedPoint, wasCanvasDragged, draggedIsNew } = storeToRefs(useSvgPathStore())
   useEventListener(canvas, 'wheel', (event: WheelEvent) => {
     event.preventDefault()
     setZoom(event)
@@ -31,18 +31,27 @@ export function initEventListener(): void {
   useEventListener(canvas, 'mousedown', (event: MouseEvent) => {
     draggedEvent.value = event
     wasCanvasDragged.value = false
+    draggedIsNew.value = false
   })
   useEventListener(canvas, 'mouseup', (_event: MouseEvent) => {
     stopDrag()
   })
   useEventListener(canvas, 'mousemove', (event: MouseEvent) => {
     // 鼠标左键点击
-    if (event.buttons === 1)
+    if (event.buttons === 1 || draggedPoint.value)
       drag(event)
   })
 }
 
-export function initSvgPath() {
+/**
+ * Initializes the SVG path based on the stored raw path.
+ *
+ * If the raw path is not empty, it is used to reload the SVG path.
+ * If the raw path is empty, an empty path is created.
+ *
+ * @return {void}
+ */
+export function initSvgPath(): void {
   const { rawPath } = storeToRefs(useSvgPathStore())
   const { reloadPath } = useComposition()
   reloadPath(rawPath.value!, true)

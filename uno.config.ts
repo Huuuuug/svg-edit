@@ -24,6 +24,7 @@ export default defineConfig({
         sans: 'DM Sans',
         serif: 'DM Serif Display',
         mono: 'DM Mono',
+        roboto: 'Roboto',
       },
     }),
     presetExtra(),
