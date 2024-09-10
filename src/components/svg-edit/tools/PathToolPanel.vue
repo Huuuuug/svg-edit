@@ -24,6 +24,17 @@ function handleClearPath() {
   reloadPath('', false)
 }
 
+function onClickOperate(type: string, item: SvgItem) {
+  if (type === 'delete') {
+    const idx = parsedPath.value?.path.indexOf(item)
+    if (idx !== -1) {
+      parsedPath.value?.delete(item)
+      if (item === foucusedItem.value)
+        foucusedItem.value = null
+    }
+  }
+}
+
 watch(() => parsedPath.value?.path, () => {
   rawPath.value = parsedPath.value?.asString(4, false)
 }, { deep: true })
@@ -55,7 +66,7 @@ watch(() => parsedPath.value?.path, () => {
       </n-collapse-item>
       <n-collapse-item title="CONFIGURATION" name="configration" />
       <n-collapse-item title="COMMANDS" name="commands">
-        <template v-for="item in parsedPath?.path" :key="item">
+        <template v-for="item, idx in parsedPath?.path" :key="item">
           <div
             class="w-full flex flex-row items-center justify-between"
             :class="{ 'bg-[#3B3B3C70]': hoveredItem === item && foucusedItem !== item, 'bg-[#2C978030]': foucusedItem === item }"
@@ -75,12 +86,12 @@ watch(() => parsedPath.value?.path, () => {
                 <input
                   :value="parseFloat(value.toFixed(4)).toString()"
                   type="text"
-                  class="block h-full w-full border-b-[1px] border-[#C8C8C8] rounded-t-[2px] bg-[#454545] text-center text-[10px] outline-none"
+                  class="block h-full w-full border-b-[1px] border-[#C8C8C8] rounded-t-[2px] bg-[#454545] text-center text-[10px] outline-none hover:border-[#f5f6fa]"
                   @input="e => updateCommandValue(e, item, idx)"
                 >
               </div>
             </div>
-            <div class="cursor-pointer" i="carbon-overflow-menu-horizontal" />
+            <CommandTool :disable-delete="idx === 0" @operate="(type: string) => onClickOperate(type, item)" />
           </div>
         </template>
       </n-collapse-item>
