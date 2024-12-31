@@ -2,7 +2,7 @@ import { storeToRefs } from 'pinia'
 import { useSvgPathStore } from '~/stores/svg-path'
 
 export function useOperateToolPanel() {
-  const { changeHistory, currentHistoryIndex, rawPath, foucusedItem, hoveredItem } = storeToRefs(useSvgPathStore())
+  const { changeHistory, currentHistoryIndex, rawPath, focusedItem, hoveredItem } = storeToRefs(useSvgPathStore())
 
   /**
    * Undo function that reverts the changes made to the raw path.
@@ -12,11 +12,11 @@ export function useOperateToolPanel() {
   function undo(): void {
     if (currentHistoryIndex.value <= -1)
       return
-    foucusedItem.value = null
+    focusedItem.value = null
     hoveredItem.value = null
     currentHistoryIndex.value--
     rawPath.value = changeHistory.value[currentHistoryIndex.value]
-    localStorage.setItem('defaultSvagPath', rawPath.value)
+    localStorage.setItem('defaultSvgPath', rawPath.value)
   }
 
   /**
@@ -27,11 +27,11 @@ export function useOperateToolPanel() {
   function redo(): void {
     if (currentHistoryIndex.value >= changeHistory.value.length - 1)
       return
-    foucusedItem.value = null
+    focusedItem.value = null
     hoveredItem.value = null
     currentHistoryIndex.value++
     rawPath.value = changeHistory.value[currentHistoryIndex.value]
-    localStorage.setItem('defaultSvagPath', rawPath.value)
+    localStorage.setItem('defaultSvgPath', rawPath.value)
   }
 
   return { undo, redo }

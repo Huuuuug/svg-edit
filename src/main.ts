@@ -1,7 +1,7 @@
-import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router/auto'
 import { createHead } from '@vueuse/head'
 import { createPinia } from 'pinia'
+import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router/auto'
 import App from './App.vue'
 
 import '@unocss/reset/tailwind.css'

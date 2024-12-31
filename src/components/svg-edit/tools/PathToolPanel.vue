@@ -1,11 +1,11 @@
 <script setup lang='ts'>
-import { storeToRefs } from 'pinia'
 import type { SvgItem } from '../core/Svg'
+import { storeToRefs } from 'pinia'
+import { useSvgPathStore } from '~/stores/svg-path'
 import { useComposition } from '../core/composition'
 import AppendNewCommand from './AppendNewCommand.vue'
-import { useSvgPathStore } from '~/stores/svg-path'
 
-const { rawPath, parsedPath, hoveredItem, foucusedItem } = storeToRefs(useSvgPathStore())
+const { rawPath, parsedPath, hoveredItem, focusedItem } = storeToRefs(useSvgPathStore())
 const { reloadPath } = useComposition()
 
 const defaultExpandedNames = ref(['path', 'commands'])
@@ -20,7 +20,7 @@ function updateCommandValue(e: any, item: SvgItem, idx: number) {
 }
 
 function handleClearPath() {
-  foucusedItem.value = null
+  focusedItem.value = null
   reloadPath('', false)
 }
 
@@ -29,8 +29,8 @@ function onClickOperate(type: string, item: SvgItem) {
     const idx = parsedPath.value?.path.indexOf(item)
     if (idx !== -1) {
       parsedPath.value?.delete(item)
-      if (item === foucusedItem.value)
-        foucusedItem.value = null
+      if (item === focusedItem.value)
+        focusedItem.value = null
     }
   }
 }
@@ -69,25 +69,25 @@ watch(() => parsedPath.value?.path, () => {
         <template v-for="item, idx in parsedPath?.path" :key="item">
           <div
             class="w-full flex flex-row items-center justify-between"
-            :class="{ 'bg-[#3B3B3C70]': hoveredItem === item && foucusedItem !== item, 'bg-[#2C978030]': foucusedItem === item }"
+            :class="{ 'bg-[#3B3B3C70]': hoveredItem === item && focusedItem !== item, 'bg-[#2C978030]': focusedItem === item }"
             @mouseenter="hoveredItem = item"
             @mouseout="hoveredItem = null"
-            @click="foucusedItem = item"
+            @click="focusedItem = item"
           >
             <div class="h-6 w-full flex flex-row items-center py-[1px]">
               <div class="grid mr-[1px] w-5 place-items-center rounded-t-[2px] bg-[#925213]">
                 {{ item.getType() }}
               </div>
               <div
-                v-for="value, idx in item.values"
-                :key="idx"
+                v-for="value, itemIdx in item.values"
+                :key="itemIdx"
                 class="h-full w-[38px] px-[1px]"
               >
                 <input
                   :value="parseFloat(value.toFixed(4)).toString()"
                   type="text"
                   class="block h-full w-full border-b-[1px] border-[#C8C8C8] rounded-t-[2px] bg-[#454545] text-center text-[10px] outline-none hover:border-[#f5f6fa]"
-                  @input="e => updateCommandValue(e, item, idx)"
+                  @input="e => updateCommandValue(e, item, itemIdx)"
                 >
               </div>
             </div>

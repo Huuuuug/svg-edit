@@ -39,7 +39,8 @@ export class Svg {
         else {
           return str
         }
-      }).join(minify ? '' : ' ')
+      })
+      .join(minify ? '' : ' ')
   }
 
   delete(item: SvgItem) {

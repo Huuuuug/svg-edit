@@ -1,12 +1,12 @@
 <script setup lang='ts'>
 import type { DropdownOption } from 'naive-ui'
-import { storeToRefs } from 'pinia'
 import type { SvgItem } from '../core/Svg'
+import { storeToRefs } from 'pinia'
 import { useComposition } from '~/components/svg-edit/core/composition'
 import { useSvgPathStore } from '~/stores/svg-path'
 
 const { insert } = useComposition()
-const { foucusedItem, parsedPath } = storeToRefs(useSvgPathStore())
+const { focusedItem, parsedPath } = storeToRefs(useSvgPathStore())
 
 const isOperateModalVisible = ref(false)
 
@@ -85,18 +85,18 @@ const operations = computed<DropdownOption[]>(() => {
   ]
   return svgItem.map(it => ({
     ...it,
-    disabled: !canInsertAfter(foucusedItem.value, it.key),
+    disabled: !canInsertAfter(focusedItem.value, it.key),
   }))
 },
 )
 
-function renderDropsdownIcon(option: DropdownOption) {
+function renderDropdownIcon(option: DropdownOption) {
   return h('H', { class: 'font-bold' }, option.key)
 }
 
 function onDropDownItemSelect(key: string, _option: DropdownOption) {
   isOperateModalVisible.value = false
-  insert(key, foucusedItem.value)
+  insert(key, focusedItem.value)
 }
 </script>
 
@@ -105,7 +105,7 @@ function onDropDownItemSelect(key: string, _option: DropdownOption) {
     placement="bottom-start"
     :options="operations"
     :show="isOperateModalVisible"
-    :render-icon="renderDropsdownIcon"
+    :render-icon="renderDropdownIcon"
     :on-clickoutside="() => isOperateModalVisible = false"
     :on-select="onDropDownItemSelect"
   >

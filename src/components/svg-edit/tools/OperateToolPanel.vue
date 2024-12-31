@@ -1,8 +1,8 @@
 <script setup lang='ts'>
 import { storeToRefs } from 'pinia'
-import { useOperateToolPanel } from './OperateToolPanel.module'
-import DownloadSvg from './DownloadSvg.vue'
 import { useSvgPathStore } from '~/stores/svg-path'
+import DownloadSvg from './DownloadSvg.vue'
+import { useOperateToolPanel } from './OperateToolPanel.module'
 
 const { undo, redo } = useOperateToolPanel()
 const { currentHistoryIndex, changeHistory } = storeToRefs(useSvgPathStore())

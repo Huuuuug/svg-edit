@@ -1,8 +1,8 @@
 <script setup lang='ts'>
 import PathCanvas from './canvas/PathCanvas.vue'
-import PathToolPanel from './tools/PathToolPanel.vue'
-import OperateToolPanel from './tools/OperateToolPanel.vue'
 import CanvasZoomPanel from './tools/CanvasZoomPanel.vue'
+import OperateToolPanel from './tools/OperateToolPanel.vue'
+import PathToolPanel from './tools/PathToolPanel.vue'
 </script>
 
 <template>

@@ -1,8 +1,8 @@
 <script setup lang='ts'>
+import { useSvgPathStore } from '~/stores/svg-path'
 import { useComposition } from '../core/composition'
 import Canvas from './Canvas.vue'
 import { initCanvas, initEventListener, initSvgPath } from './PathCanvas.module'
-import { useSvgPathStore } from '~/stores/svg-path'
 
 const props = useSvgPathStore()
 
@@ -20,7 +20,7 @@ onMounted(() => {
 watch(() => props.rawPath, (val?: string) => {
   if (!val)
     return
-  if (props.foucusedItem)
+  if (props.focusedItem)
     return
   const { reloadPath } = useComposition()
   reloadPath(val)

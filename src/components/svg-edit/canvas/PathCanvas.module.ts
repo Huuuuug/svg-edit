@@ -1,6 +1,6 @@
 import { storeToRefs } from 'pinia'
-import { useComposition } from '../core/composition'
 import { useSvgPathStore } from '~/stores/svg-path'
+import { useComposition } from '../core/composition'
 
 export function initCanvas() {
   const { zoomAuto } = useComposition()

@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
 import type { Svg, SvgControlPoint, SvgItem, SvgPoint } from '~/components/svg-edit/core/Svg'
+import { defineStore } from 'pinia'
 
 const DEFAULT_SVG_PATH = 'M 0 0 L 10 10 L 10 5 H 20 V 0 C 10 -10 5 -15 0 0'
 
@@ -16,13 +16,13 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
   const strokeWidth = ref(0)
 
   const parsedPath = ref<Svg>()
-  const rawPath = ref<string | undefined>(localStorage.getItem('defaultSvagPath') || DEFAULT_SVG_PATH)
+  const rawPath = ref<string | undefined>(localStorage.getItem('defaultSvgPath') || DEFAULT_SVG_PATH)
   const hoveredItem = ref<SvgItem | null>(null)
-  const foucusedItem = ref<SvgItem | null>(null)
+  const focusedItem = ref<SvgItem | null>(null)
   const draggedPoint = ref<SvgPoint | null>(null)
 
   const draggedIsNew = ref(false)
-  const isDragginng = ref(false)
+  const isDragging = ref(false)
 
   const draggedEvent = ref<MouseEvent | TouchEvent | null>(null)
   const wasCanvasDragged = ref(false)
@@ -44,7 +44,7 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
 
     changeHistory.value.push(path)
     currentHistoryIndex.value = changeHistory.value.length - 1
-    localStorage.setItem('defaultSvagPath', path)
+    localStorage.setItem('defaultSvgPath', path)
   }
 
   return {
@@ -55,14 +55,14 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
     parsedPath,
     rawPath,
     draggedIsNew,
-    isDragginng,
+    isDragging,
     draggedEvent,
     wasCanvasDragged,
     coordinateInterval,
     commandList,
 
     hoveredItem,
-    foucusedItem,
+    focusedItem,
     draggedPoint,
     targetPoints,
     controlPoints,

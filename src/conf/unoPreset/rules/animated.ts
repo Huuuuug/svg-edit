@@ -1,5 +1,5 @@
-import type { CSSObject, Rule } from 'unocss'
 import type { Theme } from '@unocss/preset-mini'
+import type { CSSObject, Rule } from 'unocss'
 import { handler } from '@unocss/preset-mini/utils'
 import animatedJSON from './animated.json'
 import animatedExtraJSON from './extra-animated.json'

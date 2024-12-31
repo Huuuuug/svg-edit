@@ -1,10 +1,10 @@
 import { storeToRefs } from 'pinia'
+import { useSvgPathStore } from '~/stores/svg-path'
 import { browserComputePathBoundingBox } from '../canvas/PathCanvas.help'
 import { Point, Svg, SvgItem } from './Svg'
-import { useSvgPathStore } from '~/stores/svg-path'
 
 export function useComposition() {
-  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedPoint, draggedIsNew, draggedEvent, foucusedItem, wasCanvasDragged, targetPoints, controlPoints }
+  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedPoint, draggedIsNew, draggedEvent, focusedItem, wasCanvasDragged, targetPoints, controlPoints }
     = storeToRefs(useSvgPathStore())
 
   const { addHistoryPath } = useSvgPathStore()
@@ -116,7 +116,7 @@ export function useComposition() {
     }
 
     if (newItem) {
-      foucusedItem.value = newItem
+      focusedItem.value = newItem
       draggedPoint.value = newItem.targetLocation()
     }
   }

@@ -1,6 +1,6 @@
 <script setup lang='ts'>
-import { storeToRefs } from 'pinia'
 import type { SvgPoint } from '../core/Svg'
+import { storeToRefs } from 'pinia'
 import { useSvgPathStore } from '~/stores/svg-path'
 import { symbolFn } from '~/utils'
 
@@ -43,7 +43,7 @@ const props = defineProps({
   },
 })
 
-const { coordinateInterval, foucusedItem, hoveredItem, targetPoints, controlPoints, draggedPoint } = storeToRefs(useSvgPathStore())
+const { coordinateInterval, focusedItem, hoveredItem, targetPoints, controlPoints, draggedPoint } = storeToRefs(useSvgPathStore())
 const parsedPath = computed(() => {
   if (props.parsedPath) {
     return (props.parsedPath as any).asString()
@@ -59,8 +59,8 @@ const yGrid = ref()
 
 watch(props, () => {
   if (5 * props.viewPortWidth <= props.canvasWidth) {
-    xGrid.value = Array(Math.ceil(props.viewPortWidth) + 1).fill(null).map((_, i) => Math.floor(props.viewPortX) + i)
-    yGrid.value = Array(Math.ceil(props.viewPortHeight) + 1).fill(null).map((_, i) => Math.floor(props.viewPortY) + i)
+    xGrid.value = Array.from({ length: Math.ceil(props.viewPortWidth) + 1 }).fill(null).map((_, i) => Math.floor(props.viewPortX) + i)
+    yGrid.value = Array.from({ length: Math.ceil(props.viewPortHeight) + 1 }).fill(null).map((_, i) => Math.floor(props.viewPortY) + i)
   }
   else {
     xGrid.value = []
@@ -70,7 +70,7 @@ watch(props, () => {
 
 function startDrag(item: SvgPoint, e: MouseEvent) {
   if (e.buttons === 1) {
-    foucusedItem.value = item.itemReference
+    focusedItem.value = item.itemReference
     draggedPoint.value = item
   }
 }
@@ -166,12 +166,12 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
     />
     <!-- focusPath -->
     <path
-      v-if="foucusedItem"
+      v-if="focusedItem"
       id="focusSvg"
       :stroke-width="strokeWidth"
       fill="transparent"
       stroke="#00AEFF"
-      :d="foucusedItem.asStandaloneString()"
+      :d="focusedItem.asStandaloneString()"
     />
 
     <!-- control point -->
@@ -182,7 +182,7 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
         :cy="item.y"
         fill="gray"
         :r="strokeWidth"
-        :stroke="foucusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
+        :stroke="focusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
         :stroke-width="strokeWidth * 5"
         @mousedown="(e:MouseEvent) => startDrag(item, e)"
         @mouseenter="hoveredItem = item.itemReference"
@@ -209,7 +209,7 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
         :cy="item.y"
         fill="#fff"
         :r="strokeWidth"
-        :stroke="foucusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
+        :stroke="focusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
         :stroke-width="strokeWidth * 5"
         @mousedown="(e:MouseEvent) => startDrag(item, e)"
         @mouseenter="hoveredItem = item.itemReference"
