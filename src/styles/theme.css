@@ -1,0 +1,7 @@
+html {
+  --se-panel-bg: #ffffff;
+}
+
+html.dark {
+  --se-panel-bg: #424242;
+}

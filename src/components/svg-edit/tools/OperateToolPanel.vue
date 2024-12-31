@@ -1,5 +1,6 @@
 <script setup lang='ts'>
 import { storeToRefs } from 'pinia'
+// import { clickToggleDark, isDark } from '~/composables'
 import { useSvgPathStore } from '~/stores/svg-path'
 import DownloadSvg from './DownloadSvg.vue'
 import { useOperateToolPanel } from './OperateToolPanel.module'
@@ -16,10 +17,20 @@ const isDownLoadModalVisible = ref(false)
 
 <template>
   <div class="flex flex-row gap-4">
+    <!-- <n-tooltip :show-arrow="false" trigger="hover" :style="{ padding: '4px 6px' }">
+      <template #trigger>
+        <button class="h-10 w-10 rounded-full bg-[var(--se-panel-bg)] hover:bg-[#545454]" @click="clickToggleDark">
+          <div v-if="isDark" class="i-line-md:sunny-outline-twotone-loop h-5 w-5" />
+          <div v-else class="i-line-md:sunny-outline-to-moon-loop-transition h-5 w-5" />
+        </button>
+      </template>
+      Theme
+    </n-tooltip> -->
+
     <div class="flex flex-row gap-2">
       <n-tooltip v-if="canUndo" :show-arrow="false" trigger="hover" :style="{ padding: '4px 6px' }">
         <template #trigger>
-          <button class="h-10 w-10 rounded-full bg-[#424242] hover:bg-[#545454]" @click="undo">
+          <button class="h-10 w-10 rounded-full bg-[var(--se-panel-bg)] hover:bg-[#545454]" @click="undo">
             <div class="i-ph:arrow-arc-left-bold h-5 w-5" />
           </button>
         </template>
@@ -31,7 +42,7 @@ const isDownLoadModalVisible = ref(false)
 
       <n-tooltip v-if="canRedo" :show-arrow="false" trigger="hover" :style="{ padding: '4px 6px' }">
         <template #trigger>
-          <button class="h-10 w-10 rounded-full bg-[#424242] hover:bg-[#545454]" @click="redo">
+          <button class="h-10 w-10 rounded-full bg-[var(--se-panel-bg)] hover:bg-[#545454]" @click="redo">
             <div class="i-ph:arrow-arc-right-bold h-5 w-5" />
           </button>
         </template>
@@ -44,7 +55,7 @@ const isDownLoadModalVisible = ref(false)
 
     <n-tooltip :show-arrow="false" trigger="hover" :style="{ padding: '4px 6px' }">
       <template #trigger>
-        <button class="h-10 w-10 rounded-full bg-[#424242] hover:bg-[#545454]" @click="isDownLoadModalVisible = true">
+        <button class="h-10 w-10 rounded-full bg-[var(--se-panel-bg)] hover:bg-[#545454]" @click="isDownLoadModalVisible = true">
           <div class="i-ph:download-simple-bold h-5 w-5" />
         </button>
       </template>

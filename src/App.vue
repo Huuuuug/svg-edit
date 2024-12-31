@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { darkTheme, NConfigProvider } from 'naive-ui'
-import { isDark, preferredDark } from '~/composables'
+import { isDark, preferredDark, toggleDark } from '~/composables'
 import themeOverrides from '~/conf/naiveTheme'
 
 useHead({
@@ -22,6 +22,13 @@ useHead({
     },
   ],
 })
+
+watch(() => isDark.value, () => {
+  if (isDark.value)
+    return
+
+  toggleDark(true)
+}, { immediate: true })
 </script>
 
 <template>
