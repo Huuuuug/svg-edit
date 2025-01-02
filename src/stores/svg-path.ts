@@ -24,6 +24,8 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
   const draggedIsNew = ref(false)
   const isDragging = ref(false)
 
+  const isCanvasLocked = ref(false)
+
   const draggedEvent = ref<MouseEvent | TouchEvent | null>(null)
   const wasCanvasDragged = ref(false)
 
@@ -56,6 +58,7 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
     rawPath,
     draggedIsNew,
     isDragging,
+    isCanvasLocked,
     draggedEvent,
     wasCanvasDragged,
     coordinateInterval,

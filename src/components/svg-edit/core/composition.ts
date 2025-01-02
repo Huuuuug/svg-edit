@@ -4,7 +4,7 @@ import { browserComputePathBoundingBox } from '../canvas/PathCanvas.help'
 import { Point, Svg, SvgItem } from './Svg'
 
 export function useComposition() {
-  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedPoint, draggedIsNew, draggedEvent, focusedItem, wasCanvasDragged, targetPoints, controlPoints }
+  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedPoint, draggedIsNew, isCanvasLocked, draggedEvent, focusedItem, wasCanvasDragged, targetPoints, controlPoints }
     = storeToRefs(useSvgPathStore())
 
   const { addHistoryPath } = useSvgPathStore()
@@ -128,6 +128,8 @@ export function useComposition() {
    * @return {void} This function does not return anything.
    */
   function setZoom(event: WheelEvent): void {
+    if (isCanvasLocked.value)
+      return
     const scale = 1.002 ** event.deltaY
     const pt = eventToLocation(event)
 
@@ -191,6 +193,8 @@ export function useComposition() {
       reloadPoints()
     }
     else if (draggedEvent.value) {
+      if (isCanvasLocked.value)
+        return
       // 拖拽画布
       wasCanvasDragged.value = true
       const oriPt = eventToLocation(draggedEvent.value)

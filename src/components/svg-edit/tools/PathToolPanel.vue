@@ -4,11 +4,12 @@ import { storeToRefs } from 'pinia'
 import { useSvgPathStore } from '~/stores/svg-path'
 import { useComposition } from '../core/composition'
 import AppendNewCommand from './AppendNewCommand.vue'
+import Configuration from './Configuration.vue'
 
 const { rawPath, parsedPath, hoveredItem, focusedItem } = storeToRefs(useSvgPathStore())
 const { reloadPath, insert } = useComposition()
 
-const defaultExpandedNames = ref(['path', 'commands'])
+const defaultExpandedNames = ref(['path', 'commands', 'configuration'])
 
 function updateCommandValue(e: any, item: SvgItem, idx: number) {
   const val = Number((e.target as any)?.value)
@@ -66,7 +67,9 @@ watch(() => parsedPath.value?.path, () => {
           <AppendNewCommand />
         </div>
       </n-collapse-item>
-      <n-collapse-item title="CONFIGURATION" name="configration" />
+      <n-collapse-item title="CONFIGURATION" name="configuration">
+        <Configuration />
+      </n-collapse-item>
       <n-collapse-item title="COMMANDS" name="commands">
         <template v-for="item, idx in parsedPath?.path" :key="item">
           <div
