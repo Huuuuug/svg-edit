@@ -6,7 +6,7 @@ import { useComposition } from '../core/composition'
 import AppendNewCommand from './AppendNewCommand.vue'
 
 const { rawPath, parsedPath, hoveredItem, focusedItem } = storeToRefs(useSvgPathStore())
-const { reloadPath } = useComposition()
+const { reloadPath, insert } = useComposition()
 
 const defaultExpandedNames = ref(['path', 'commands'])
 
@@ -26,12 +26,14 @@ function handleClearPath() {
 
 function onClickOperate(type: string, item: SvgItem) {
   if (type === 'delete') {
-    const idx = parsedPath.value?.path.indexOf(item)
-    if (idx !== -1) {
+    if (parsedPath.value?.path.indexOf(item) !== -1) {
       parsedPath.value?.delete(item)
       if (item === focusedItem.value)
         focusedItem.value = null
     }
+  }
+  else {
+    insert(type, focusedItem.value)
   }
 }
 
