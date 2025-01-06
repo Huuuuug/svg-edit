@@ -58,7 +58,12 @@ function onPanelSwitch() {
 
 <template>
   <div class="relative h-full">
-    <div class="trapezoid absolute" @click="onPanelSwitch" />
+    <n-popover trigger="hover" :show-arrow="false">
+      <template #trigger>
+        <div class="trapezoid absolute" @click="onPanelSwitch" />
+      </template>
+      <span>{{ isPanelVisible ? 'Fold' : 'Extend' }}</span>
+    </n-popover>
     <transition name="transition-fade">
       <div v-if="isPanelVisible" class="h-full w-[320px] bg-[#252526] p-1">
         <n-collapse arrow-placement="right" :default-expanded-names="defaultExpandedNames">
