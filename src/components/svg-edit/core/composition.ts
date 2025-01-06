@@ -4,7 +4,7 @@ import { browserComputePathBoundingBox } from '../canvas/PathCanvas.help'
 import { Point, Svg, SvgItem } from './Svg'
 
 export function useComposition() {
-  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, draggedPoint, draggedIsNew, isCanvasLocked, draggedEvent, focusedItem, wasCanvasDragged, targetPoints, controlPoints }
+  const { canvasHeight, canvasWidth, rawPath, parsedPath, cfg, strokeWidth, decimals, draggedPoint, draggedIsNew, isSnap, isCanvasLocked, draggedEvent, focusedItem, wasCanvasDragged, targetPoints, controlPoints }
     = storeToRefs(useSvgPathStore())
 
   const { addHistoryPath } = useSvgPathStore()
@@ -183,6 +183,9 @@ export function useComposition() {
     // 计算当前鼠标的位置
     const pt = eventToLocation(event)
     if (draggedPoint.value && parsedPath.value) {
+      const decimalsValue = event.ctrlKey ? (decimals.value ? decimals.value : 3) : isSnap.value ? 0 : decimals.value
+      pt.x = Number.parseFloat(pt.x.toFixed(decimalsValue))
+      pt.y = Number.parseFloat(pt.y.toFixed(decimalsValue))
       parsedPath.value.setLocation(draggedPoint.value, pt as Point)
       if (draggedIsNew.value) {
         const previousIdx = parsedPath.value.path.indexOf(draggedPoint.value.itemReference) - 1

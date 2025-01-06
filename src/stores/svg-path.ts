@@ -29,12 +29,23 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
   const draggedEvent = ref<MouseEvent | TouchEvent | null>(null)
   const wasCanvasDragged = ref(false)
 
+  const isShowTick = ref(true)
   const coordinateInterval = ref(10)
 
   const commandList = ref([])
 
   const targetPoints = ref<SvgPoint[]>([])
   const controlPoints = ref<SvgControlPoint[]>([])
+
+  // 坐标保留小数点个数
+  const decimals = ref<number>(3)
+  const isSnap = ref(true)
+
+  const isFill = ref(true)
+  const isPreview = ref(false)
+
+  // svg压缩
+  const isMinify = ref(false)
 
   // for redo and undo
   const changeHistory = ref<string[]>([rawPath.value || ''])
@@ -50,6 +61,8 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
   }
 
   return {
+    isMinify,
+    isSnap,
     canvasWidth,
     canvasHeight,
     cfg,
@@ -61,15 +74,17 @@ export const useSvgPathStore = defineStore('svgPathStore', () => {
     isCanvasLocked,
     draggedEvent,
     wasCanvasDragged,
+    isShowTick,
     coordinateInterval,
     commandList,
-
+    decimals,
+    isFill,
     hoveredItem,
     focusedItem,
     draggedPoint,
     targetPoints,
     controlPoints,
-
+    isPreview,
     changeHistory,
 
     currentHistoryIndex,

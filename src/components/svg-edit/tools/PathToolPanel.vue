@@ -6,7 +6,7 @@ import { useComposition } from '../core/composition'
 import AppendNewCommand from './AppendNewCommand.vue'
 import Configuration from './Configuration.vue'
 
-const { rawPath, parsedPath, hoveredItem, focusedItem } = storeToRefs(useSvgPathStore())
+const { rawPath, parsedPath, hoveredItem, focusedItem, isMinify, decimals } = storeToRefs(useSvgPathStore())
 const { reloadPath, insert } = useComposition()
 
 const defaultExpandedNames = ref(['path', 'commands', 'configuration'])
@@ -16,7 +16,7 @@ function updateCommandValue(e: any, item: SvgItem, idx: number) {
   if (!Number.isNaN(val)) {
     item.values[idx] = Number(val)
     parsedPath.value!.refreshAbsolutePositions()
-    rawPath.value = parsedPath.value?.asString(4, false)
+    rawPath.value = parsedPath.value?.asString(decimals.value, isMinify.value)
   }
 }
 
@@ -39,7 +39,7 @@ function onClickOperate(type: string, item: SvgItem) {
 }
 
 watch(() => parsedPath.value?.path, () => {
-  rawPath.value = parsedPath.value?.asString(4, false)
+  rawPath.value = parsedPath.value?.asString(decimals.value, isMinify.value)
 }, { deep: true })
 </script>
 
@@ -79,8 +79,8 @@ watch(() => parsedPath.value?.path, () => {
             @mouseout="hoveredItem = null"
             @click="focusedItem = item"
           >
-            <div class="h-6 w-full flex flex-row items-center py-[1px]">
-              <div class="grid mr-[1px] w-5 place-items-center rounded-t-[2px] bg-[#925213]">
+            <div class="h-[20px] w-full flex flex-row items-center py-[1px]">
+              <div class="grid mr-[1px] h-full w-5 place-items-center border-b border-[#C8C8C8] rounded-t-[2px] bg-[#925213] text-[12px]">
                 {{ item.getType() }}
               </div>
               <div

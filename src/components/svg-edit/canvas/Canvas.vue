@@ -43,10 +43,11 @@ const props = defineProps({
   },
 })
 
-const { coordinateInterval, focusedItem, hoveredItem, targetPoints, controlPoints, draggedPoint } = storeToRefs(useSvgPathStore())
+const { coordinateInterval, focusedItem, hoveredItem, targetPoints, controlPoints, draggedPoint, isShowTick, isFill, isPreview, isMinify, decimals } = storeToRefs(useSvgPathStore())
+
 const parsedPath = computed(() => {
   if (props.parsedPath) {
-    return (props.parsedPath as any).asString()
+    return (props.parsedPath as any).asString(decimals.value, isMinify)
   }
 
   else {
@@ -77,74 +78,78 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
 </script>
 
 <template>
-  <svg class="bg-transparent" width="100%" height="100%" :viewBox="`${viewPortX} ${viewPortY} ${viewPortWidth} ${viewPortHeight}`">
+  <svg :class="isPreview ? `bg-white` : `bg-transparent`" width="100%" height="100%" :viewBox="`${viewPortX} ${viewPortY} ${viewPortWidth} ${viewPortHeight}`">
     <!-- 背景网格 -->
-    <line
-      :x1="props.viewPortX"
-      y1="0"
-      :x2="props.viewPortX + props.viewPortWidth"
-      y2="0"
-      stroke="#40404180"
-      fill="transparent"
-      :stroke-width="strokeWidth * 4"
-    />
+    <template v-if="!isPreview">
+      <line
+        :x1="props.viewPortX"
+        y1="0"
+        :x2="props.viewPortX + props.viewPortWidth"
+        y2="0"
+        stroke="#40404180"
+        fill="transparent"
+        :stroke-width="strokeWidth * 4"
+      />
 
-    <line
-      :x1="0"
-      :y1="props.viewPortY"
-      :x2="0"
-      :y2="props.viewPortY + props.viewPortHeight"
-      stroke="#40404180"
-      fill="transparent"
-      :stroke-width="strokeWidth * 4"
-    />
+      <line
+        :x1="0"
+        :y1="props.viewPortY"
+        :x2="0"
+        :y2="props.viewPortY + props.viewPortHeight"
+        stroke="#40404180"
+        fill="transparent"
+        :stroke-width="strokeWidth * 4"
+      />
 
-    <line
-      v-for="item in xGrid"
-      :key="symbolFn(item)"
-      :x1="item"
-      :y1="props.viewPortY"
-      :x2="item"
-      :y2="props.viewPortY + props.viewPortHeight"
-      stroke="#353536"
-      fill="transparent"
-      :stroke-width="(item !== 0 && item % coordinateInterval === 0) ? strokeWidth * 3 : strokeWidth"
-    />
+      <line
+        v-for="item in xGrid"
+        :key="symbolFn(item)"
+        :x1="item"
+        :y1="props.viewPortY"
+        :x2="item"
+        :y2="props.viewPortY + props.viewPortHeight"
+        stroke="#353536"
+        fill="transparent"
+        :stroke-width="(item !== 0 && item % coordinateInterval === 0) ? strokeWidth * 1.6 : strokeWidth"
+      />
 
-    <line
-      v-for="item in yGrid"
-      :key="symbolFn(item)"
-      :x1="props.viewPortX"
-      :y1="item"
-      :x2="props.viewPortX + props.viewPortWidth"
-      :y2="item"
-      stroke="#353536"
-      fill="transparent"
-      :stroke-width="(item !== 0 && item % coordinateInterval === 0) ? strokeWidth * 3 : strokeWidth"
-    />
-
-    <!-- coordinate line -->
-    <template v-for="x in xGrid" :key="x">
-      <text
-        v-if="x % coordinateInterval === 0 "
-        class="select-none"
-        :style="{ fontSize: `${strokeWidth * 12}px`, fill: '#595959' }"
-        :x="x - 18 * strokeWidth"
-        :y="-6 * strokeWidth"
-      >{{ x }}
-      </text>
+      <line
+        v-for="item in yGrid"
+        :key="symbolFn(item)"
+        :x1="props.viewPortX"
+        :y1="item"
+        :x2="props.viewPortX + props.viewPortWidth"
+        :y2="item"
+        stroke="#353536"
+        fill="transparent"
+        :stroke-width="(item !== 0 && item % coordinateInterval === 0) ? strokeWidth * 1.6 : strokeWidth"
+      />
     </template>
 
-    <template v-for="y in yGrid" :key="y">
-      <text
-        v-if="y % coordinateInterval === 0 && y !== 0"
-        class="select-none"
-        :style="{ fontSize: `${strokeWidth * 12}px`, fill: '#595959' }"
-        :x="-20 * strokeWidth"
-        :y="y - 6 * strokeWidth"
-      >
-        {{ y }}
-      </text>
+    <!-- coordinate line -->
+    <template v-if="isShowTick && !isPreview">
+      <template v-for="x in xGrid" :key="x">
+        <text
+          v-if="x % coordinateInterval === 0 "
+          class="select-none"
+          :style="{ fontSize: `${strokeWidth * 12}px`, fill: '#595959' }"
+          :x="x - 18 * strokeWidth"
+          :y="-6 * strokeWidth"
+        >{{ x }}
+        </text>
+      </template>
+
+      <template v-for="y in yGrid" :key="y">
+        <text
+          v-if="y % coordinateInterval === 0 && y !== 0"
+          class="select-none"
+          :style="{ fontSize: `${strokeWidth * 12}px`, fill: '#595959' }"
+          :x="-20 * strokeWidth"
+          :y="y - 6 * strokeWidth"
+        >
+          {{ y }}
+        </text>
+      </template>
     </template>
 
     <!-- full path -->
@@ -152,7 +157,7 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
       id="mainSvg"
       :stroke-width="strokeWidth"
       stroke="#fff"
-      fill="#ffffff60"
+      :fill="isPreview ? '#000' : isFill ? '#ffffff60' : 'transparent'"
       :d="parsedPath"
     />
     <!-- hoverPath -->
@@ -160,7 +165,7 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
       v-if="hoveredItem"
       id="focusSvg"
       :stroke-width="strokeWidth"
-      fill="transparent"
+      :fill="isPreview ? '#000' : 'transparent'"
       stroke="#FF0033"
       :d="hoveredItem.asStandaloneString()"
     />
@@ -173,52 +178,48 @@ function startDrag(item: SvgPoint, e: MouseEvent) {
       stroke="#00AEFF"
       :d="focusedItem.asStandaloneString()"
     />
-
     <!-- control point -->
-    <g v-for="item in controlPoints" :key="symbolFn(item)">
-      <circle
-        class="z1 cursor-pointer"
-        :cx="item.x"
-        :cy="item.y"
-        fill="gray"
-        :r="strokeWidth"
-        :stroke="focusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
-        :stroke-width="strokeWidth * 5"
-        @mousedown="(e:MouseEvent) => startDrag(item, e)"
-        @mouseenter="hoveredItem = item.itemReference"
-        @mouseleave="hoveredItem = null"
-      />
-      <line
-        v-for="rel in item.relations"
-        :key="symbolFn(rel)"
-        class="z0"
-        :x1="item.x"
-        :y1="item.y"
-        :x2="rel.x"
-        :y2="rel.y"
-        :stroke-width="strokeWidth"
-        stroke="gray"
-      />
-    </g>
+    <template v-if="!isPreview">
+      <g v-for="item in controlPoints" :key="symbolFn(item)">
+        <circle
+          class="cursor-pointer"
+          :cx="item.x"
+          :cy="item.y"
+          :fill="focusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
+          :r="strokeWidth * 1.3"
+          :stroke="focusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
+          :stroke-width="strokeWidth * 4"
+          @mousedown="(e:MouseEvent) => startDrag(item, e)"
+          @mouseenter="hoveredItem = item.itemReference"
+          @mouseleave="hoveredItem = null"
+        />
+        <line
+          v-for="rel in item.relations"
+          :key="symbolFn(rel)"
+          :x1="item.x"
+          :y1="item.y"
+          :x2="rel.x"
+          :y2="rel.y"
+          :stroke-width="strokeWidth"
+          stroke="gray"
+        />
+      </g>
 
-    <!-- target point -->
-    <template v-for="item in targetPoints" :key="symbolFn(item)">
-      <circle
-        class="z1 cursor-pointer"
-        :cx="item.x"
-        :cy="item.y"
-        fill="#fff"
-        :r="strokeWidth"
-        :stroke="focusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
-        :stroke-width="strokeWidth * 5"
-        @mousedown="(e:MouseEvent) => startDrag(item, e)"
-        @mouseenter="hoveredItem = item.itemReference"
-        @mouseleave="hoveredItem = null"
-      />
+      <!-- target point -->
+      <template v-for="item in targetPoints" :key="symbolFn(item)">
+        <circle
+          class="cursor-pointer"
+          :cx="item.x"
+          :cy="item.y"
+          :r="strokeWidth * 1.3"
+          :stroke="focusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
+          :fill="focusedItem === item.itemReference ? '#00AEFF' : hoveredItem === item.itemReference ? '#FF0033' : 'gray'"
+          :stroke-width="strokeWidth * 4"
+          @mousedown="(e:MouseEvent) => startDrag(item, e)"
+          @mouseenter="hoveredItem = item.itemReference"
+          @mouseleave="hoveredItem = null"
+        />
+      </template>
     </template>
-
   </svg>
 </template>
-
-<style scoped>
-</style>
