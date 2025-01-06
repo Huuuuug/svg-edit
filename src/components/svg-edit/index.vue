@@ -7,7 +7,7 @@ import PathToolPanel from './tools/PathToolPanel.vue'
 
 <template>
   <div class="app-wrapper pos-relative h-screen w-screen flex">
-    <div class="h-full w-[320px]">
+    <div class="h-full">
       <PathToolPanel />
     </div>
 
