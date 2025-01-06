@@ -38,6 +38,12 @@ function onClickOperate(type: string, item: SvgItem) {
   }
 }
 
+function onEllipticalArcChange(parsedPathIdx: number, pathIdx: number) {
+  if (!parsedPath.value)
+    return
+  parsedPath.value.path[parsedPathIdx].values[pathIdx] = parsedPath.value.path[parsedPathIdx].values[pathIdx] === 0 ? 1 : 0
+}
+
 watch(() => parsedPath.value?.path, () => {
   rawPath.value = parsedPath.value?.asString(decimals.value, isMinify.value)
 }, { deep: true })
@@ -83,18 +89,36 @@ watch(() => parsedPath.value?.path, () => {
               <div class="grid mr-[1px] h-full w-5 place-items-center border-b border-[#C8C8C8] rounded-t-[2px] bg-[#925213] text-[12px]">
                 {{ item.getType() }}
               </div>
-              <div
-                v-for="value, itemIdx in item.values"
-                :key="itemIdx"
-                class="h-full w-[38px] px-[1px]"
-              >
-                <input
-                  :value="parseFloat(value.toFixed(4)).toString()"
-                  type="text"
-                  class="block h-full w-full border-b-[1px] border-[#C8C8C8] rounded-t-[2px] bg-[#454545] text-center text-[10px] outline-none hover:border-[#f5f6fa]"
-                  @input="e => updateCommandValue(e, item, itemIdx)"
+              <template v-if="item.getType() === 'A'">
+                <div
+                  v-for="value, itemIdx in item.values"
+                  :key="itemIdx"
+                  class="h-full flex items-center px-[1px]"
                 >
-              </div>
+                  <n-checkbox v-if="itemIdx === 3 || itemIdx === 4" :focusable="false" :checked="Boolean(value)" @click="onEllipticalArcChange(idx, itemIdx)" />
+                  <input
+                    v-else
+                    :value="parseFloat(value.toFixed(4)).toString()"
+                    type="text"
+                    class="block h-full w-[38px] border-b-[1px] border-[#C8C8C8] rounded-t-[2px] bg-[#454545] text-center text-[10px] outline-none hover:border-[#f5f6fa]"
+                    @input="e => updateCommandValue(e, item, itemIdx)"
+                  >
+                </div>
+              </template>
+              <template v-else>
+                <div
+                  v-for="value, itemIdx in item.values"
+                  :key="itemIdx"
+                  class="h-full flex items-center px-[1px]"
+                >
+                  <input
+                    :value="parseFloat(value.toFixed(4)).toString()"
+                    type="text"
+                    class="block h-full w-[38px] border-b-[1px] border-[#C8C8C8] rounded-t-[2px] bg-[#454545] text-center text-[10px] outline-none hover:border-[#f5f6fa]"
+                    @input="e => updateCommandValue(e, item, itemIdx)"
+                  >
+                </div>
+              </template>
             </div>
             <CommandTool :disable-delete="idx === 0" @operate="(type: string) => onClickOperate(type, item)" />
           </div>
